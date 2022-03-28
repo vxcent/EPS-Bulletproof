@@ -57,15 +57,15 @@ function handleCompliantUpdate(compliant) {
     $("#gpc-status").removeClass("bg-danger")
     $("#ccpa-status").addClass("bg-success")
     $("#gpc-status").addClass("bg-success")
-    $("#ccpa-status").val("Compliant")
-    $("#gpc-status").val("Compliant")
+    $("#ccpa-status").text("Compliant")
+    $("#gpc-status").text("Compliant")
   } else {
     $("#ccpa-status").removeClass("bg-success")
     $("#gpc-status").removeClass("bg-success")
     $("#ccpa-status").addClass("bg-danger")
     $("#gpc-status").addClass("bg-danger")
-    $("#ccpa-status").val("Not Compliant")
-    $("#gpc-status").val("Not Compliant")
+    $("#ccpa-status").text("Not Compliant")
+    $("#gpc-status").text("Not Compliant")
   }
 }
 
