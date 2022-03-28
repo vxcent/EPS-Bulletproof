@@ -50,3 +50,50 @@ function dumpFineGrainedGPCConfiguration() {
 document.addEventListener('DOMContentLoaded', function () {
   dumpFineGrainedGPCConfiguration();
 });
+
+function handleCompliantUpdate(compliant) {
+  if (compliant) {
+    $("#ccpa-status").removeClass("bg-danger")
+    $("#gpc-status").removeClass("bg-danger")
+    $("#ccpa-status").addClass("bg-success")
+    $("#gpc-status").addClass("bg-success")
+    $("#ccpa-status").val("Compliant")
+    $("#gpc-status").val("Compliant")
+  } else {
+    $("#ccpa-status").removeClass("bg-success")
+    $("#gpc-status").removeClass("bg-success")
+    $("#ccpa-status").addClass("bg-danger")
+    $("#gpc-status").addClass("bg-danger")
+    $("#ccpa-status").val("Not Compliant")
+    $("#gpc-status").val("Not Compliant")
+  }
+}
+
+window.onload = function() {
+  //popup was opened, do what you want
+  // Update states in popup page
+  // Fetch the url of the page
+  chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
+    if (tabs.length > 0) {
+      console.log("send CCPA state fetch message to content script")
+      chrome.tabs.sendMessage(tabs[0].id, {action: "CCPA State Fetch"}, function(response) {
+        console.log("Get CCPA result " + response.reply)
+        handleCompliantUpdate(response.reply)
+      })
+    } else {
+      console.log("url is not detected")
+    }
+  })
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request == undefined) {
+    return
+  }
+  if (request.action === "CCPA State Update") {
+    // CCPA alert dialog popup
+    console.log("received update message")
+    handleCompliantUpdate(request.data)
+    sendResponse({reply: "ok"})
+  }
+});
