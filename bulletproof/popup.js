@@ -75,22 +75,22 @@ function handleCompliantUpdate(compliant) {
   }
 }
 
-// window.onload = function() {
-//   //popup was opened, do what you want
-//   // Update states in popup page
-//   // Fetch the url of the page
-//   chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
-//     if (tabs.length > 0) {
-//       console.log("send CCPA state fetch message to content script")
-//       chrome.tabs.sendMessage(tabs[0].id, {action: "CCPA State Fetch"}, function(response) {
-//         //console.log("Get CCPA result " + response.reply)
-//         handleCompliantUpdate(response.reply)
-//       })
-//     } else {
-//       console.log("url is not detected")
-//     }
-//   })
-// }
+window.onload = function() {
+  //popup was opened, do what you want
+  // Update states in popup page
+  // Fetch the url of the page
+  chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
+    if (tabs.length > 0) {
+      console.log("send CCPA state fetch message to content script")
+      chrome.tabs.sendMessage(tabs[0].id, {action: "CCPA State Fetch"}, function(response) {
+        //console.log("Get CCPA result " + response.reply)
+        handleCompliantUpdate(response.reply)
+      })
+    } else {
+      console.log("url is not detected")
+    }
+  })
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request == undefined) {
