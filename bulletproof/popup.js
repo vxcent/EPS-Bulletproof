@@ -4,31 +4,37 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-var privacyConfig = {
-  "Core Identity" : {
-    "Name": true,
-    "Email": true,
-    "Address": true,
-    "Phone Number": true,
-    "Photo Of You": true,
-  }, 
-  "Value-based Identity" : {
-    "Date of Birth": true,
-    "Bank Account Number": true,
-    "Credit Card Number": true,
-    "Driver's License": true,
-    "Vehicle VIN": true,
-    "IP Address": false,
-  }, 
-  "Extened Identity" : {
-    "Location": true,
-    "Social Meida Profile": true,
-    "Employment History": true,
-    "Health Details": true,
-  }, 
-}
+// var privacyConfig = {
+//   "Core Identity" : {
+//     "Name": true,
+//     "Email": true,
+//     "Address": true,
+//     "Phone Number": true,
+//     "Photo Of You": true,
+//   }, 
+//   "Value-based Identity" : {
+//     "Date of Birth": true,
+//     "Bank Account Number": true,
+//     "Credit Card Number": true,
+//     "Driver's License": true,
+//     "Vehicle VIN": true,
+//     "IP Address": false,
+//   }, 
+//   "Extened Identity" : {
+//     "Location": true,
+//     "Social Meida Profile": true,
+//     "Employment History": true,
+//     "Health Details": true,
+//   }, 
+// }
 
 function dumpFineGrainedGPCConfiguration() {
+  chrome.storage.local.get(["privacyConfig"]).then((config) => {
+    loadFineGrainedGPCConfiguration(config.privacyConfig) 
+  });
+}
+
+function loadFineGrainedGPCConfiguration(privacyConfig) {
   Object.keys(privacyConfig).forEach(function(category) {
     var column = $("<div class='col'><strong>" + category + "</strong></div>")
     config = privacyConfig[category]
@@ -69,22 +75,22 @@ function handleCompliantUpdate(compliant) {
   }
 }
 
-window.onload = function() {
-  //popup was opened, do what you want
-  // Update states in popup page
-  // Fetch the url of the page
-  chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
-    if (tabs.length > 0) {
-      console.log("send CCPA state fetch message to content script")
-      chrome.tabs.sendMessage(tabs[0].id, {action: "CCPA State Fetch"}, function(response) {
-        console.log("Get CCPA result " + response.reply)
-        handleCompliantUpdate(response.reply)
-      })
-    } else {
-      console.log("url is not detected")
-    }
-  })
-}
+// window.onload = function() {
+//   //popup was opened, do what you want
+//   // Update states in popup page
+//   // Fetch the url of the page
+//   chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
+//     if (tabs.length > 0) {
+//       console.log("send CCPA state fetch message to content script")
+//       chrome.tabs.sendMessage(tabs[0].id, {action: "CCPA State Fetch"}, function(response) {
+//         //console.log("Get CCPA result " + response.reply)
+//         handleCompliantUpdate(response.reply)
+//       })
+//     } else {
+//       console.log("url is not detected")
+//     }
+//   })
+// }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request == undefined) {

@@ -1,8 +1,35 @@
+// Default configuration
 const blacklist = [
   "https://www.google.com/"
 ]
 
+var privacyConfig = {
+  "Core Identity" : {
+    "Name": true,
+    "Email": true,
+    "Address": true,
+    "Phone Number": true,
+    "Photo Of You": true,
+  }, 
+  "Value-based Identity" : {
+    "Date of Birth": true,
+    "Bank Account Number": true,
+    "Credit Card Number": true,
+    "Driver's License": true,
+    "Vehicle VIN": true,
+    "IP Address": true,
+  }, 
+  "Extened Identity" : {
+    "Location": true,
+    "Social Meida Profile": true,
+    "Employment History": true,
+    "Health Details": true,
+  }, 
+}
+
 chrome.storage.local.set({ "blacklist": blacklist }, function(){});
+chrome.storage.local.set({ "privacyConfig": privacyConfig }, function(){});
+
 
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   if (changeInfo == undefined) {
@@ -20,8 +47,7 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
           if (config.blacklist.includes(url)) {
             compliant = false
             chrome.tabs.sendMessage(tabs[0].id, { action: "CCPA Alert" }, function(response) {
-              console.log("alert window: " + response.reply)
-              // TODO: Terminate websites
+              //console.log("alert window: " + response.reply)
             })
           }
           chrome.runtime.sendMessage({
