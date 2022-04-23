@@ -30,7 +30,7 @@ var privacyConfig = {
 chrome.storage.local.set({ "blacklist": blacklist }, function(){});
 chrome.storage.local.set({ "privacyConfig": privacyConfig }, function(){});
 
-
+// check compliance and send event
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   if (changeInfo == undefined) {
     return
@@ -47,7 +47,7 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
           if (config.blacklist.includes(url)) {
             compliant = false
             chrome.tabs.sendMessage(tabs[0].id, { action: "CCPA Alert" }, function(response) {
-              //console.log("alert window: " + response.reply)
+              console.log("alert window: " + response.reply)
             })
           }
           chrome.runtime.sendMessage({
@@ -61,3 +61,37 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
     })
   }
 })
+
+// send fine-grained GPC request
+chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
+  if (changeInfo == undefined) {
+    return
+  }
+  if (changeInfo.status == 'complete') {
+    chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
+      if (tabs != undefined && tabs.length > 0) {
+        let url = tabs[0].url
+        chrome.storage.local.get(["privacyConfig"]).then((config) => {
+          fetch(getHost(url), {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(config.privacyConfig)
+          }).then(res => {
+            console.log("Request complete! response:", res);
+          });
+        })
+      } else {
+        console.log("url is not detected")
+      }
+    })
+  }
+})
+
+
+function getHost(url) {
+  urlParts = /^(?:\w+\:\/\/)?([^\/]+)([^\?]*)\??(.*)$/.exec(url);
+  hostname = urlParts[1]; // www.example.com
+  return "https://" + hostname + "/gpc"
+}
+
+

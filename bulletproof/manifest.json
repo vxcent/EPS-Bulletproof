@@ -3,6 +3,7 @@
   "description": "A browser action that protect user's CCPA right",
   "version": "1.1",
   "manifest_version": 3,
+
   "permissions": [
     "tabs",
     "storage"

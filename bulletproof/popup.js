@@ -27,7 +27,6 @@
 //     "Health Details": true,
 //   }, 
 // }
-
 function dumpFineGrainedGPCConfiguration() {
   chrome.storage.local.get(["privacyConfig"]).then((config) => {
     loadFineGrainedGPCConfiguration(config.privacyConfig) 
@@ -41,7 +40,7 @@ function loadFineGrainedGPCConfiguration(privacyConfig) {
     Object.keys(config).forEach(function(field) {
       var checkBoxTemplate = `
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" ${config[field] ? "checked" : ""}>
+          <input class="form-check-input" type="checkbox" value="" id="${field}" ${config[field] ? "checked" : ""}>
           <label class="form-check-label" for="flexCheckChecked">
             ${field}
           </label>
@@ -51,6 +50,32 @@ function loadFineGrainedGPCConfiguration(privacyConfig) {
     })
     $("#gpcConfig").append(column)
   })
+
+  // bind the vent to change the configuration
+  $(".form-check-input").change(function(event) {
+    chrome.storage.local.get(["privacyConfig"]).then((config) => {
+      let _config = config.privacyConfig
+      var v = false
+      if (this.checked) {
+        v = true
+      }
+      
+      var field
+      for (let key in _config) {
+        if (event.target.id in _config[key]) {
+          field = key
+          break
+        }   
+      }
+      
+      _config[field][event.target.id] = v
+      console.log(_config)
+
+      chrome.storage.local.set({"privacyConfig": _config}, function() {});
+    })
+    
+    
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -103,3 +128,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({reply: "ok"})
   }
 });
+
