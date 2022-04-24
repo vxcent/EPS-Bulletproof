@@ -28,7 +28,7 @@ chrome.storage.local.set({ "privacyConfig": privacyConfig }, function(){});
 
 var test = chrome.runtime.getURL("web_list.csv")
 chrome.storage.local.get(["blacklist"]).then((data) => {
-  if (data.blacklist.length == 0) {
+  if (data.blacklist == undefined || data.blacklist.length == 0) {
     fetch(test).then(resp => {
       resp.text().then(web_list => {
         let ccpa_webs = web_list.split('\n')
@@ -45,7 +45,7 @@ chrome.storage.local.get(["blacklist"]).then((data) => {
       })
     })
   } else {
-    console.log("existed")
+    console.log("existed " + data.blacklist)
   }
 })
 
@@ -62,7 +62,7 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
         // Check if the url is CCPA compliant
         chrome.storage.local.get(["blacklist"]).then((config) => {
           compliant = true
-          if (config.blacklist.includes(url)) {
+          if (config.blacklist != undefined && config.blacklist.includes(url)) {
             compliant = false
             chrome.tabs.sendMessage(tabs[0].id, { action: "CCPA Alert" }).catch(_ => {})
           }
