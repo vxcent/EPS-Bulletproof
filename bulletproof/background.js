@@ -40,20 +40,17 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
     chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
       if (tabs != undefined && tabs.length > 0) {
         let url = tabs[0].url
-        console.log("received " + url)
         // Check if the url is CCPA compliant
         chrome.storage.local.get(["blacklist"]).then((config) => {
           compliant = true
           if (config.blacklist.includes(url)) {
             compliant = false
-            chrome.tabs.sendMessage(tabs[0].id, { action: "CCPA Alert" }, function(response) {
-              console.log("alert window: " + response.reply)
-            })
+            chrome.tabs.sendMessage(tabs[0].id, { action: "CCPA Alert" }).catch(_ => {})
           }
           chrome.runtime.sendMessage({
             action: "CCPA State Update", 
             data: compliant
-          });
+          }).catch(_ => {});
         });
       } else {
         console.log("url is not detected")
@@ -72,16 +69,18 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
       if (tabs != undefined && tabs.length > 0) {
         let url = tabs[0].url
         chrome.storage.local.get(["privacyConfig"]).then((config) => {
-          fetch(getHost(url), {
+          let host = getHost(url)
+          let body = JSON.stringify(config.privacyConfig)
+          fetch(host, {
             method: "POST",
             headers: {'Content-Type': 'application/json'}, 
-            body: JSON.stringify(config.privacyConfig)
+            body: body
           }).then(res => {
             console.log("Request complete! response:", res);
+          }).catch(err => {
+            console.log("error " + err)
           });
         })
-      } else {
-        console.log("url is not detected")
       }
     })
   }
