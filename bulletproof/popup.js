@@ -85,18 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
 function handleCompliantUpdate(compliant) {
   if (compliant) {
     $("#ccpa-status").removeClass("bg-danger")
-    $("#gpc-status").removeClass("bg-danger")
     $("#ccpa-status").addClass("bg-success")
-    $("#gpc-status").addClass("bg-success")
     $("#ccpa-status").text("Detected")
-    $("#gpc-status").text("Detected")
   } else {
     $("#ccpa-status").removeClass("bg-success")
-    $("#gpc-status").removeClass("bg-success")
     $("#ccpa-status").addClass("bg-danger")
-    $("#gpc-status").addClass("bg-danger")
     $("#ccpa-status").text("Not Detected")
-    $("#gpc-status").text("Not Detected")
   }
 }
 
