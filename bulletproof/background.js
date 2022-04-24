@@ -1,7 +1,4 @@
 // Default configuration
-const blacklist = [
-  "https://www.google.com/"
-]
 
 var privacyConfig = {
   "Core Identity" : {
@@ -27,8 +24,30 @@ var privacyConfig = {
   }, 
 }
 
-chrome.storage.local.set({ "blacklist": blacklist }, function(){});
 chrome.storage.local.set({ "privacyConfig": privacyConfig }, function(){});
+
+var test = chrome.runtime.getURL("web_list.csv")
+chrome.storage.local.get(["blacklist"]).then((data) => {
+  if (data.blacklist.length == 0) {
+    fetch(test).then(resp => {
+      resp.text().then(web_list => {
+        let ccpa_webs = web_list.split('\n')
+        let blacklist = []
+        ccpa_webs.forEach((web, _) => {
+          let tokens = web.split(',')
+          let host = tokens[0]
+          let ccpa = tokens[1]
+          if (ccpa == 0) {
+            blacklist.push(host)
+          }
+        })
+        chrome.storage.local.set({ "blacklist": blacklist }, function(){});
+      })
+    })
+  } else {
+    console.log("existed")
+  }
+})
 
 // check compliance and send event
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
@@ -39,7 +58,7 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
     // Fetch the url of the page
     chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, tabs => {
       if (tabs != undefined && tabs.length > 0) {
-        let url = tabs[0].url
+        let url = tabs[0].url.replace("www.", "").slice(0, -1)
         // Check if the url is CCPA compliant
         chrome.storage.local.get(["blacklist"]).then((config) => {
           compliant = true
