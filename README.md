@@ -1,6 +1,12 @@
 # EPS-Bulletproof
 This is Bulletproof Chrome extension that can protect user's privacy right of CCPA.
 
+### Web Scraping
+1. Generate a list of top 1000 websites based on their traffic
+2. Extract links to each website's privacy policy page
+3. Search if CCPA or California Consumer Privacy Act is stated in each privacy policy page
+4. Export a list of 1000 websites and result of checking CCPA compliance
+
 ### Features
 1. Detection of CCPA/GPC Compliance (Current demo list of complaince is hardcoded)
 2. Fine-grained configuration of privacy preference
