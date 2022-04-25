@@ -2,7 +2,7 @@
 This is Bulletproof Chrome extension that can protect user's privacy right of CCPA.
 
 ### Web Scraping
-We have a Python script */bulletproof/web_rank* which check the CCPA compliance of popular websites, it will:
+We have a Python script */bulletproof/web_rank.py* which check the CCPA compliance of popular websites, it will:
 1. Generate a list of top 1000 websites based on their traffic
 2. Extract links to each website's privacy policy page
 3. Search if CCPA or California Consumer Privacy Act is stated in each privacy policy page
